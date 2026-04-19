@@ -8,7 +8,8 @@
 		"postinstall": "prisma generate",
 		"db:migrate": "prisma migrate dev",
 		"db:generate": "prisma generate",
-		"dev": "nodemon src/app.ts"
+		"db:seed": "prisma migrate reset && tsx prisma/seed.ts",
+		"dev": "nodemon --exec tsx src/app.ts"
 	},
 	"keywords": [],
 	"author": "",
