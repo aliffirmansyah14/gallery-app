@@ -17,17 +17,6 @@
 	"license": "ISC",
 	"type": "commonjs",
 	"devDependencies": {
-		"@types/bcryptjs": "^2.4.6",
-		"@types/jsonwebtoken": "^9.0.10",
-		"@types/pg": "^8.20.0",
-		"concurrently": "^9.2.1",
-		"tsx": "^4.21.0"
-	},
-	"dependencies": {
-		"@prisma/adapter-pg": "^7.7.0",
-		"@types/cors": "^2.8.19",
-		"bcryptjs": "^3.0.3",
-		"jsonwebtoken": "^9.0.3",
-		"pg": "^8.20.0"
+		"concurrently": "^9.2.1"
 	}
 }
