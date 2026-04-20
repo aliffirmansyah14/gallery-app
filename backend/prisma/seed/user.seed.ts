@@ -21,11 +21,15 @@ const USERS: Pick<User, "email" | "address" | "name" | "role" | "password">[] =
 	];
 
 export async function seedUsers() {
-	for (const user of USERS) {
-		user.password = await bcrypt.hash(user.password, 10);
+	try {
+		for (const user of USERS) {
+			user.password = await bcrypt.hash(user.password, 10);
+		}
+		const users = await prisma.user.createMany({
+			data: USERS,
+		});
+		console.log("Successed seed users: ", JSON.stringify(users, null, 2));
+	} catch (error: any) {
+		throw new Error("Error saat seed users : ", error);
 	}
-	const users = await prisma.user.createMany({
-		data: USERS,
-	});
-	console.log({ users });
 }
