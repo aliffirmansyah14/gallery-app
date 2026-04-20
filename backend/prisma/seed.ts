@@ -1,33 +1,8 @@
-import bcrypt from "bcryptjs";
-import type { User } from "../src/generated/prisma/client";
 import { prisma } from "../src/config/database";
-
-const USERS: Pick<User, "email" | "address" | "name" | "role" | "password">[] =
-	[
-		{
-			email: "admin@example.com",
-			address: "lenteng",
-			name: "admin",
-			role: "ADMIN",
-			password: "super_admin",
-		},
-		{
-			email: "user@example.com",
-			address: "lenteng",
-			name: "alif",
-			role: "USER",
-			password: "user1234",
-		},
-	];
+import { seedUsers } from "./seed/user.seed";
 
 async function main() {
-	for (const user of USERS) {
-		user.password = await bcrypt.hash(user.password, 10);
-	}
-	const users = await prisma.user.createMany({
-		data: USERS,
-	});
-	console.log({ users });
+	await seedUsers();
 }
 
 main()
