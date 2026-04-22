@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 const server = express();
 
 const corsOptions: CorsOptions = {
-	origin: [`http://localhost:${PORT}`],
+	origin: [`http://localhost:5173`],
 };
 
 server.use(cors(corsOptions));

@@ -9,12 +9,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
-import { loginSchema, type LoginFormData } from "../types/auth.schema";
+import { loginSchema, type LoginFormData } from "../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import InputPassword from "./InputPassword";
+import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
 
 const FormLogin = () => {
+	const { handleLogin } = useAuth();
+	const [error, setError] = useState<string>("");
 	const form = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
 		defaultValues: {
@@ -25,9 +29,11 @@ const FormLogin = () => {
 
 	const onSubmit = async (data: LoginFormData) => {
 		try {
-			console.log(data);
-		} catch (error) {
-			alert("Login gagal, periksa kembali akun Anda");
+			await handleLogin(data);
+			setError("");
+		} catch (error: any) {
+			console.error(error);
+			setError(error.message || "");
 		}
 	};
 	return (
@@ -37,6 +43,12 @@ const FormLogin = () => {
 				<CardDescription>
 					Enter your email below to login to your account
 				</CardDescription>
+
+				{error && (
+					<div>
+						<p className="text-red-500">{error}</p>
+					</div>
+				)}
 			</CardHeader>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 				<CardContent className="space-y-2">
@@ -74,7 +86,11 @@ const FormLogin = () => {
 					/>
 				</CardContent>
 				<CardFooter>
-					<Button type="submit" className="w-full py-5 text-lg">
+					<Button
+						type="submit"
+						className="w-full py-5 text-lg"
+						disabled={form.formState.isSubmitting}
+					>
 						Login
 					</Button>
 				</CardFooter>
