@@ -8,41 +8,77 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Controller, useForm } from "react-hook-form";
+import { loginSchema, type LoginFormData } from "../types/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import InputPassword from "./InputPassword";
 
 const FormLogin = () => {
+	const form = useForm<LoginFormData>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+	});
+
+	const onSubmit = async (data: LoginFormData) => {
+		try {
+			console.log(data);
+		} catch (error) {
+			alert("Login gagal, periksa kembali akun Anda");
+		}
+	};
 	return (
 		<Card className="shadow-md">
 			<CardHeader>
-				<CardTitle>Login to Gallery App</CardTitle>
+				<CardTitle className="text-xl">Login to Gallery App</CardTitle>
 				<CardDescription>
 					Enter your email below to login to your account
 				</CardDescription>
 			</CardHeader>
-			<CardContent>
-				<form>
-					<div className="flex flex-col gap-6">
-						<div className="grid gap-2">
-							<Label htmlFor="email">Email</Label>
-							<Input
-								id="email"
-								type="email"
-								placeholder="m@example.com"
-								required
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label htmlFor="password">Password</Label>
-							<Input id="password" type="password" required />
-						</div>
-					</div>
-				</form>
-			</CardContent>
-			<CardFooter className="flex-col gap-2">
-				<Button type="submit" className="w-full">
-					Login
-				</Button>
-			</CardFooter>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+				<CardContent className="space-y-2">
+					<Controller
+						name="email"
+						control={form.control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+								<Input
+									{...field}
+									id={field.name}
+									aria-invalid={fieldState.invalid}
+									placeholder="m@example.com"
+									required
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)}
+					/>
+					<Controller
+						name="password"
+						control={form.control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid}>
+								<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+								<InputPassword field={field} fieldState={fieldState} />
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
+						)}
+					/>
+				</CardContent>
+				<CardFooter>
+					<Button type="submit" className="w-full py-5 text-lg">
+						Login
+					</Button>
+				</CardFooter>
+			</form>
 		</Card>
 	);
 };
