@@ -14,7 +14,7 @@ const FormLogin = () => {
 	return (
 		<Card className="shadow-md">
 			<CardHeader>
-				<CardTitle>Login to your account</CardTitle>
+				<CardTitle>Login to Gallery App</CardTitle>
 				<CardDescription>
 					Enter your email below to login to your account
 				</CardDescription>
@@ -32,15 +32,7 @@ const FormLogin = () => {
 							/>
 						</div>
 						<div className="grid gap-2">
-							<div className="flex items-center">
-								<Label htmlFor="password">Password</Label>
-								<a
-									href="#"
-									className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-								>
-									Forgot your password?
-								</a>
-							</div>
+							<Label htmlFor="password">Password</Label>
 							<Input id="password" type="password" required />
 						</div>
 					</div>
