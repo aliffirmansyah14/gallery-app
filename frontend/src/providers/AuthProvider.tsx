@@ -1,4 +1,5 @@
 import { getUser } from "@/features/auth/services/auth.services";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { createContext, useEffect, useState } from "react";
 
 export type User = {
@@ -20,6 +21,7 @@ export const AuthContext = createContext<AuthContextTypes | undefined>(
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [user, setUser] = useState<User | undefined>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [_, setToken] = useLocalStorage("token", "");
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -29,7 +31,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 				console.log(response);
 				if (response.success) {
 					setUser(response.data?.user);
-					localStorage.setItem("token", response.data?.token || "");
+					setToken(response.data?.token || "");
 				}
 			} catch (error) {
 				console.log(error);
@@ -39,15 +41,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 		fetchUser();
 	}, []);
-
-	const setToken = (value: string) => {
-		if (!value) {
-			console.log("token tidak ada");
-			return;
-		}
-		localStorage.setItem("token", value);
-	};
-
 	return (
 		<AuthContext
 			value={{
