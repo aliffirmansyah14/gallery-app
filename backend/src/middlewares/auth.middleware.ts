@@ -23,10 +23,8 @@ export const protect = (
 	}
 
 	try {
-		console.log({ token });
 		const decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
 
-		console.log(decoded);
 		req.user = { userId: decoded.userId };
 
 		next();

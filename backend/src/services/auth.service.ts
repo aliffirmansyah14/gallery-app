@@ -11,6 +11,7 @@ export const authService = {
 				id: true,
 				email: true,
 				password: true,
+				name: true,
 			},
 			where: { email },
 		});
@@ -20,6 +21,6 @@ export const authService = {
 		const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
 			expiresIn: "1d",
 		});
-		return { token, user: { id: user.id, email: email } };
+		return { token, user: { id: user.id, email: email, name: user.name } };
 	},
 };
