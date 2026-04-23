@@ -2,7 +2,7 @@ import { useContext } from "react";
 import type { LoginFormData } from "../types";
 import { AuthContext } from "@/providers/AuthProvider";
 import * as authService from "@/features/auth/services/auth.services";
-import axios from "axios";
+import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 
 export const useAuth = () => {
 	const context = useContext(AuthContext);
@@ -13,14 +13,10 @@ export const useAuth = () => {
 			const res = await authService.login(data);
 			console.log(res.data);
 			context.setToken(res.data?.token || "");
+			context.setUser(res.data?.user);
 		} catch (error) {
-			let message;
-			if (axios.isAxiosError(error) && error.response) {
-				message = error.response.data.message;
-			} else {
-				message = String(error);
-			}
-			throw new Error(message);
+			const err = getCleanErrorMessage(error);
+			console.log(err);
 		}
 	};
 

@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { BaseController } from "./BaseController";
 import { authService } from "../services/auth.service";
+import type { AuthRequest } from "../interfaces/auth.interface";
 
 class UserController extends BaseController {
 	login = async (req: Request, res: Response) => {
@@ -17,6 +18,19 @@ class UserController extends BaseController {
 				return this.clientError(res, 401, error.message);
 			}
 			return this.fail(res, error);
+		}
+	};
+	getMe = async (req: AuthRequest, res: Response) => {
+		try {
+			if (!req.user?.userId)
+				return this.clientError(res, 403, "Token tidak valid");
+
+			const result = await authService.getUserWithId(req.user.userId);
+			if (result) {
+				return this.ok(res, 200, result);
+			}
+		} catch (error) {
+			this.fail(res, error);
 		}
 	};
 }

@@ -23,4 +23,16 @@ export const authService = {
 		});
 		return { token, user: { id: user.id, email: email, name: user.name } };
 	},
+	async getUserWithId(userId: string) {
+		return prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				name: true,
+				email: true,
+			},
+		});
+	},
 };

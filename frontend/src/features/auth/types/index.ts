@@ -4,9 +4,10 @@ import type { User } from "@/providers/AuthProvider";
 export * from "./login.schema";
 export * from "./auth.types";
 
-export interface AuthData {
-	token: string;
+export interface AuthData extends User {}
+export interface AuthDataWithToken {
 	user: User;
+	token: string;
 }
-
+export type AuthResponseWithToken = BaseResponse<AuthDataWithToken>;
 export type AuthResponse = BaseResponse<AuthData>;
