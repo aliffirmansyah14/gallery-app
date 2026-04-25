@@ -22,28 +22,28 @@ export const AuthContext = createContext<AuthContextTypes | undefined>(
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [user, setUser] = useState<User | undefined>();
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [_, setToken] = useLocalStorage("token", "");
 
-	useEffect(() => {
-		const fetchUser = async () => {
-			setIsLoading(true);
-			try {
-				const response = await getUser();
-				if (response.success) {
-					console.log(response.data);
-					setUser(response.data);
-				}
-			} catch (error) {
-				const err = getCleanErrorMessage(error);
-				console.log("Auth fetch error : ", err.message);
-				setUser(undefined);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchUser();
-	}, []);
+	// useEffect(() => {
+	// 	const fetchUser = async () => {
+	// 		setIsLoading(true);
+	// 		try {
+	// 			const response = await getUser();
+	// 			if (response.success) {
+	// 				console.log(response.data);
+	// 				setUser(response.data);
+	// 			}
+	// 		} catch (error) {
+	// 			const err = getCleanErrorMessage(error);
+	// 			console.log("Auth fetch error : ", err.message);
+	// 			setUser(undefined);
+	// 		} finally {
+	// 			setIsLoading(false);
+	// 		}
+	// 	};
+	// 	fetchUser();
+	// }, []);
 
 	const contextValue = {
 		user,

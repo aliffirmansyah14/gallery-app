@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import HomePage from "@/pages/HomePage";
 import AuthProvider from "@/providers/AuthProvider";
+import MainLayout from "@/layout/MainLayout";
 
 const AppRoutes = () => {
 	return (
@@ -12,7 +13,13 @@ const AppRoutes = () => {
 				<Route element={<AuthLayout />}>
 					<Route path="/login" element={<LoginPage />} />
 				</Route>
-				<Route element={<ProtectedRoute />}>
+				<Route
+					element={
+						<ProtectedRoute>
+							<MainLayout />
+						</ProtectedRoute>
+					}
+				>
 					<Route path="/" element={<HomePage />} />
 				</Route>
 			</Routes>
