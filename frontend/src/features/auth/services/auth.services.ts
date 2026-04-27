@@ -7,14 +7,21 @@ import type {
 
 export const login = async (
 	data: LoginFormData,
+	controler?: AbortController,
 ): Promise<AuthResponseWithToken> => {
-	const response = await api.post<AuthResponseWithToken>("/login", data);
+	const response = await api.post<AuthResponseWithToken>("/login", data, {
+		signal: controler?.signal,
+	});
 
 	return response.data;
 };
 
-export const getUser = async (): Promise<AuthResponse> => {
-	const response = await api.get<AuthResponse>("/me");
+export const getUser = async (
+	controler?: AbortController,
+): Promise<AuthResponse> => {
+	const response = await api.get<AuthResponse>("/me", {
+		signal: controler?.signal,
+	});
 
 	return response.data;
 };
