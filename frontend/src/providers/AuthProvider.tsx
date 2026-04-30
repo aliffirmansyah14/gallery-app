@@ -29,42 +29,42 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [_, setToken] = useLocalStorage("token", "");
 	const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
-	useEffect(() => {
-		const fetchUser = async () => {
-			abortControllerRef.current?.abort();
-			abortControllerRef.current = new AbortController();
-
-			setIsLoading(true);
-			try {
-				const response = await authService.getUser(abortControllerRef.current);
-				if (response.success) {
-					console.log(response.data);
-					setUser(response.data);
-				}
-			} catch (error) {
-				const err = getCleanErrorMessage(error);
-				console.log("Auth fetch error : ", err.message);
-				setUser(undefined);
-			} finally {
-				setIsLoading(false);
+	const fetchUser = async (controller: AbortController) => {
+		setIsLoading(true);
+		try {
+			const response = await authService.getUser(controller);
+			if (response.success) {
+				setUser(response.data);
 			}
-		};
-		fetchUser();
+		} catch (error: any) {
+			if (error.name === "AbortError") return;
+
+			// const err = getCleanErrorMessage(error);
+			// console.error("Auth fetch error:", err.message);
+			setUser(undefined);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		abortControllerRef.current = new AbortController();
+		fetchUser(abortControllerRef.current);
 		return () => {
 			abortControllerRef.current?.abort();
 		};
 	}, []);
 
 	const handleLogin = async (data: LoginFormData) => {
+		abortControllerRef.current?.abort();
+		abortControllerRef.current = new AbortController();
 		try {
-			abortControllerRef.current?.abort();
 			const res = await authService.login(data, abortControllerRef.current);
 			console.log(res.data);
 			setToken(res.data?.token || "");
 			setUser(res.data?.user);
 		} catch (error) {
-			const err = getCleanErrorMessage(error);
-			throw err;
+			throw getCleanErrorMessage(error);
 		}
 	};
 

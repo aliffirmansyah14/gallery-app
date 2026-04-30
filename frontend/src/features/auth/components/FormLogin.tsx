@@ -45,7 +45,7 @@ const FormLogin = () => {
 				</CardDescription>
 
 				{error && (
-					<div>
+					<div className="bg-destructive/20 rounded  p-2">
 						<p className="text-red-500">{error}</p>
 					</div>
 				)}

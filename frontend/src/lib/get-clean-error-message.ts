@@ -30,6 +30,7 @@ export const getCleanErrorMessage = (error: unknown): CleanError => {
 		}
 
 		// Error saat setup request atau pembatalan request
+		console.log({ error });
 		return {
 			status: null,
 			message: error.message,
@@ -41,7 +42,7 @@ export const getCleanErrorMessage = (error: unknown): CleanError => {
 	return {
 		status: null,
 		message:
-			error instanceof Error ? error.message : "Terjadi kesalahan sistem.",
+			error instanceof Error ? error.message : "Terjadi kesalahan diserver.",
 		type: "UNKNOWN_ERROR",
 	};
 };
