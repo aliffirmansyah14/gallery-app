@@ -5,9 +5,9 @@ export * from "./login.schema";
 export * from "./auth.types";
 
 export interface AuthData extends User {}
-export interface AuthDataWithToken {
-	user: User;
+
+export type AuthResponseWithToken = BaseResponse<{
+	user: AuthData;
 	token: string;
-}
-export type AuthResponseWithToken = BaseResponse<AuthDataWithToken>;
+}>;
 export type AuthResponse = BaseResponse<AuthData>;

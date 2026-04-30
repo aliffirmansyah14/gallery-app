@@ -4,9 +4,9 @@ import type {
 	ControllerFieldState,
 	ControllerRenderProps,
 } from "react-hook-form";
-import type { LoginFormData } from "../types/auth.schema";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
+import type { LoginFormData } from "../types";
 
 interface InputPasswordProps {
 	field: ControllerRenderProps<LoginFormData, "password">;

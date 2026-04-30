@@ -1,7 +1,8 @@
-import { getUser } from "@/features/auth/services/auth.services";
+import type { LoginFormData } from "@/features/auth/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import { createContext, useEffect, useRef, useState } from "react";
+import * as authService from "@/features/auth/services/auth.services";
 
 export type User = {
 	id: string;
@@ -15,6 +16,7 @@ type AuthContextTypes = {
 	setToken: (value: string) => void;
 	abortControllerRef: React.RefObject<AbortController | undefined>;
 	loading: boolean;
+	handleLogin: (data: LoginFormData) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextTypes | undefined>(
@@ -34,7 +36,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 			setIsLoading(true);
 			try {
-				const response = await getUser(abortControllerRef.current);
+				const response = await authService.getUser(abortControllerRef.current);
 				if (response.success) {
 					console.log(response.data);
 					setUser(response.data);
@@ -53,12 +55,26 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		};
 	}, []);
 
+	const handleLogin = async (data: LoginFormData) => {
+		try {
+			abortControllerRef.current?.abort();
+			const res = await authService.login(data, abortControllerRef.current);
+			console.log(res.data);
+			setToken(res.data?.token || "");
+			setUser(res.data?.user);
+		} catch (error) {
+			const err = getCleanErrorMessage(error);
+			throw err;
+		}
+	};
+
 	const contextValue = {
 		user,
 		setUser,
 		setToken,
 		abortControllerRef,
 		loading: isLoading,
+		handleLogin,
 	};
 	return <AuthContext value={contextValue}>{children}</AuthContext>;
 };

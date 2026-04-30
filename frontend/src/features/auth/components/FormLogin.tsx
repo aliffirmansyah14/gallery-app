@@ -29,11 +29,11 @@ const FormLogin = () => {
 
 	const onSubmit = async (data: LoginFormData) => {
 		try {
-			await handleLogin(data);
 			setError("");
+			await handleLogin(data);
 		} catch (error: any) {
 			console.error(error);
-			setError(error.message || "");
+			setError(error.message);
 		}
 	};
 	return (
