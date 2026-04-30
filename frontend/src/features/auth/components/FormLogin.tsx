@@ -14,11 +14,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import InputPassword from "./InputPassword";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
+import { useRef } from "react";
+import LoginErrorBanner, {
+	type LoginErrorBannerHandle,
+} from "./LoginErrorBanner";
 
 const FormLogin = () => {
 	const { handleLogin } = useAuth();
-	const [error, setError] = useState<string>("");
+	const errorRef = useRef<LoginErrorBannerHandle | null>(null);
 	const form = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
 		defaultValues: {
@@ -29,11 +32,11 @@ const FormLogin = () => {
 
 	const onSubmit = async (data: LoginFormData) => {
 		try {
-			setError("");
+			errorRef.current?.clear();
 			await handleLogin(data);
 		} catch (error: any) {
 			console.error(error);
-			setError(error.message);
+			errorRef.current?.display(error.message);
 		}
 	};
 	return (
@@ -43,12 +46,7 @@ const FormLogin = () => {
 				<CardDescription>
 					Enter your email below to login to your account
 				</CardDescription>
-
-				{error && (
-					<div className="bg-destructive/20 rounded  p-2">
-						<p className="text-red-500">{error}</p>
-					</div>
-				)}
+				<LoginErrorBanner ref={errorRef} />
 			</CardHeader>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 				<CardContent className="space-y-2">
