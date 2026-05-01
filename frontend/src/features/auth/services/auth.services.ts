@@ -16,7 +16,7 @@ export const login = async (
 	return response.data;
 };
 
-export const getUser = async (
+export const getMe = async (
 	controler?: AbortController,
 ): Promise<AuthResponse> => {
 	const response = await api.get<AuthResponse>("/me", {

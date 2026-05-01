@@ -1,8 +1,9 @@
 import type { LoginFormData } from "@/features/auth/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
-import { createContext, useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import * as authService from "@/features/auth/services/auth.services";
+import { AuthContext } from "@/features/auth/hooks/useAuth";
 
 export type User = {
 	id: string;
@@ -10,44 +11,45 @@ export type User = {
 	name: string;
 };
 
-type AuthContextTypes = {
-	user: User | undefined;
-	setUser: (value: User | undefined) => void;
+export type AuthContextTypes = {
+	user: User | null;
+	setUser: (value: User | null) => void;
 	setToken: (value: string) => void;
-	abortControllerRef: React.RefObject<AbortController | undefined>;
+	// abortControllerRef: React.RefObject<AbortController | undefined>;
 	loading: boolean;
 	handleLogin: (data: LoginFormData) => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextTypes | undefined>(
-	undefined,
-);
-
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-	const [user, setUser] = useState<User | undefined>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+export default function AuthProvider({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const [user, setUser] = useState<User | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [_, setToken] = useLocalStorage("token", "");
-	const abortControllerRef = useRef<AbortController | undefined>(undefined);
+	const abortControllerRef = useRef<AbortController | null>(null);
 
-	const fetchUser = async (controller: AbortController) => {
-		setIsLoading(true);
+	const fetchUser = useEffectEvent(async (controller: AbortController) => {
+		setLoading(true);
 		try {
-			const response = await authService.getUser(controller);
-			if (response.success) {
+			const response = await authService.getMe(controller);
+			if (response.success && response.data) {
 				setUser(response.data);
 			}
 		} catch (error: any) {
 			if (error.name === "AbortError") return;
 
-			// const err = getCleanErrorMessage(error);
-			// console.error("Auth fetch error:", err.message);
-			setUser(undefined);
+			const err = getCleanErrorMessage(error);
+			console.error("Auth fetch error:", err.message);
+			setUser(null);
 		} finally {
-			setIsLoading(false);
+			setLoading(false);
 		}
-	};
+	});
 
 	useEffect(() => {
+		abortControllerRef.current?.abort();
 		abortControllerRef.current = new AbortController();
 		fetchUser(abortControllerRef.current);
 		return () => {
@@ -59,10 +61,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		abortControllerRef.current?.abort();
 		abortControllerRef.current = new AbortController();
 		try {
-			const res = await authService.login(data, abortControllerRef.current);
-			console.log(res.data);
-			setToken(res.data?.token || "");
-			setUser(res.data?.user);
+			const response = await authService.login(
+				data,
+				abortControllerRef.current,
+			);
+			console.log(response.data);
+			if (response.success && response.data) {
+				setToken(response.data.token);
+				setUser(response.data.user);
+			}
 		} catch (error) {
 			throw getCleanErrorMessage(error);
 		}
@@ -72,11 +79,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		user,
 		setUser,
 		setToken,
-		abortControllerRef,
-		loading: isLoading,
+		loading,
 		handleLogin,
 	};
 	return <AuthContext value={contextValue}>{children}</AuthContext>;
-};
-
-export default AuthProvider;
+}
