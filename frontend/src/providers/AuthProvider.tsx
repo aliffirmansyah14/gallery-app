@@ -1,7 +1,13 @@
 import type { LoginFormData } from "@/features/auth/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import {
+	useEffect,
+	useEffectEvent,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import * as authService from "@/features/auth/services/auth.services";
 import { AuthContext } from "@/features/auth/hooks/useAuth";
 
@@ -28,6 +34,7 @@ export default function AuthProvider({
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [_, setToken] = useLocalStorage("token", "");
+	const [__, startTransition] = useTransition();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const fetchUser = useEffectEvent(async (controller: AbortController) => {
@@ -42,6 +49,7 @@ export default function AuthProvider({
 
 			const err = getCleanErrorMessage(error);
 			console.error("Auth fetch error:", err.message);
+
 			setUser(null);
 		} finally {
 			setLoading(false);
@@ -51,28 +59,37 @@ export default function AuthProvider({
 	useEffect(() => {
 		abortControllerRef.current?.abort();
 		abortControllerRef.current = new AbortController();
+
 		fetchUser(abortControllerRef.current);
+
 		return () => {
 			abortControllerRef.current?.abort();
 		};
 	}, []);
 
-	const handleLogin = async (data: LoginFormData) => {
+	const handleLogin = async (data: LoginFormData): Promise<void> => {
 		abortControllerRef.current?.abort();
-		abortControllerRef.current = new AbortController();
-		try {
-			const response = await authService.login(
-				data,
-				abortControllerRef.current,
-			);
-			console.log(response.data);
-			if (response.success && response.data) {
-				setToken(response.data.token);
-				setUser(response.data.user);
-			}
-		} catch (error) {
-			throw getCleanErrorMessage(error);
-		}
+		return new Promise((resolve, reject) => {
+			startTransition(async () => {
+				abortControllerRef.current = new AbortController();
+				try {
+					const response = await authService.login(
+						data,
+						abortControllerRef.current,
+					);
+
+					console.log(response);
+					setToken(response.data?.token || "");
+					setUser(response.data?.user || null);
+
+					resolve();
+				} catch (error: any) {
+					if (error.name === "AbortError") return;
+
+					reject(getCleanErrorMessage(error));
+				}
+			});
+		});
 	};
 
 	const contextValue = {
