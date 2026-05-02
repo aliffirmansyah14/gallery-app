@@ -2,7 +2,7 @@ import AuthLayout from "@/layout/AuthLayout";
 import LoginPage from "@/pages/auth/LoginPage";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import HomePage from "@/pages/HomePage";
+import HomePage from "@/pages/home/HomePage";
 import AuthProvider from "@/providers/AuthProvider";
 import MainLayout from "@/layout/MainLayout";
 
