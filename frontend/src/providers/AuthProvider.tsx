@@ -45,7 +45,7 @@ export default function AuthProvider({
 				setUser(response.data);
 			}
 		} catch (error: any) {
-			if (error.name === "AbortError") return;
+			if (error.name === "CanceledError" || error.name === "AbortError") return;
 
 			const err = getCleanErrorMessage(error);
 			console.error("Auth fetch error:", err.message);
@@ -84,9 +84,13 @@ export default function AuthProvider({
 
 					resolve();
 				} catch (error: any) {
-					if (error.name === "AbortError") return;
+					if (error.name === "CanceledError" || error.name === "AbortError")
+						return;
 
-					reject(getCleanErrorMessage(error));
+					const err = getCleanErrorMessage(error);
+					console.log("Error saat login : ", err);
+
+					reject(err);
 				}
 			});
 		});

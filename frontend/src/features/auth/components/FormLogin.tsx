@@ -35,7 +35,6 @@ const FormLogin = () => {
 			errorRef.current?.clear();
 			await handleLogin(data);
 		} catch (error: any) {
-			console.error(error);
 			errorRef.current?.display(error.message);
 		}
 	};
