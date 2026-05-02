@@ -40,7 +40,7 @@ export default function AuthProvider({
 	const fetchUser = useEffectEvent(async (controller: AbortController) => {
 		setLoading(true);
 		try {
-			const response = await authService.getMe(controller);
+			const response = await authService.getMe(controller.signal);
 			if (response.success && response.data) {
 				setUser(response.data);
 			}
@@ -75,7 +75,7 @@ export default function AuthProvider({
 				try {
 					const response = await authService.login(
 						data,
-						abortControllerRef.current,
+						abortControllerRef.current.signal,
 					);
 
 					console.log(response);

@@ -16,7 +16,7 @@ export const useFiles = () => {
 			setLoading(true);
 			try {
 				const response = await fileService.getAllFiles(
-					abortControllerRef.current,
+					abortControllerRef.current.signal,
 				);
 				console.log(response.data);
 				setFiles(response.data || []);
