@@ -43,4 +43,15 @@ export const fileService = {
 			},
 		});
 	},
+	async getFiles() {
+		return await prisma.file.findMany({
+			select: {
+				id: true,
+				blurDataUrl: true,
+				createdAt: true,
+				mimeType: true,
+				name: true,
+			},
+		});
+	},
 };

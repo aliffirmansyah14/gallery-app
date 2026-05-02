@@ -27,6 +27,18 @@ class FileController extends BaseController {
 			this.fail(res, error);
 		}
 	};
+	getAllFiles = async (req: AuthRequest, res: Response) => {
+		console.log(
+			`Request get all files ${new Date().toString()} : ${req.user?.userId} `,
+		);
+		try {
+			const result = await fileService.getFiles();
+
+			return this.ok(res, 200, result);
+		} catch (error) {
+			this.fail(res, error);
+		}
+	};
 }
 
 export const fileController = new FileController();
