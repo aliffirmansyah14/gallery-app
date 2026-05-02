@@ -4,6 +4,7 @@ export type File = {
 	id: string;
 	name: string;
 	mimeType: string;
+	url: string;
 	blurDataUrl: string | null;
 	createdAt: Date;
 };
