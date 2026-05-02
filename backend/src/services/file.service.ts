@@ -47,10 +47,12 @@ export const fileService = {
 		return await prisma.file.findMany({
 			select: {
 				id: true,
+				name: true,
+				mimeType: true,
+				size: true,
+				url: true,
 				blurDataUrl: true,
 				createdAt: true,
-				mimeType: true,
-				name: true,
 			},
 		});
 	},
