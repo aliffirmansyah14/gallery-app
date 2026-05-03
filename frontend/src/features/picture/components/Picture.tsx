@@ -1,10 +1,10 @@
-import type { File } from "../types";
+import type { Picture } from "../types";
 
 interface PictureCardProps {
-	picture: File;
+	picture: Picture;
 }
 
-const Picture = ({ picture }: PictureCardProps) => {
+const PictureCard = ({ picture }: PictureCardProps) => {
 	return (
 		<div className="mb-4 break-inside-avoid">
 			<img
@@ -16,4 +16,4 @@ const Picture = ({ picture }: PictureCardProps) => {
 	);
 };
 
-export default Picture;
+export default PictureCard;

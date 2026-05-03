@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, User } from "lucide-react";
+import CreatePictureDialog from "@/features/picture/components/CreatePictureDialog";
+import { Settings, User } from "lucide-react";
 
 const Header = () => {
 	return (
@@ -22,10 +23,7 @@ const Header = () => {
 						>
 							<User />
 						</Button>
-						<Button className="px-4 rounded-2xl h-9">
-							<Plus className="size-6" /> Upload
-							<span className="max-sm:hidden">New Image</span>
-						</Button>
+						<CreatePictureDialog />
 					</div>
 				</div>
 			</header>
