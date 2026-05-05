@@ -11,6 +11,16 @@ export const getAllFiles = async (
 	return response.data;
 };
 
+export const getFileById = async (
+	id: string,
+	signal?: AbortSignal,
+): Promise<BaseResponse<Picture>> => {
+	const response = await api.get(`/file/${id}`, {
+		signal,
+	});
+	return response.data;
+};
+
 export const uploadFile = async (
 	formData: FormData,
 	signal?: AbortSignal,

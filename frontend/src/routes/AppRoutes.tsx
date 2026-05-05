@@ -6,6 +6,7 @@ import HomePage from "@/pages/home/HomePage";
 import AuthProvider from "@/providers/AuthProvider";
 import MainLayout from "@/layout/MainLayout";
 import { PictureProvider } from "@/providers/PictureProvider";
+import DetailPage from "@/pages/detail/DetailPage";
 
 const AppRoutes = () => {
 	return (
@@ -23,7 +24,9 @@ const AppRoutes = () => {
 						</ProtectedRoute>
 					}
 				>
-					<Route path="/" element={<HomePage />} />
+					<Route path="/" element={<HomePage />}>
+						<Route path="/detail/:id" element={<DetailPage />} />
+					</Route>
 				</Route>
 			</Routes>
 		</AuthProvider>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Picture } from "../types";
 
 interface PictureCardProps {
@@ -6,13 +7,16 @@ interface PictureCardProps {
 
 const PictureCard = ({ picture }: PictureCardProps) => {
 	return (
-		<div className="mb-4 break-inside-avoid">
+		<Link
+			to={`/detail/${picture.id}`}
+			className="mb-4 block break-inside-avoid"
+		>
 			<img
 				className="h-auto w-full rounded-lg"
 				src={picture.url}
 				alt={picture.name}
 			/>
-		</div>
+		</Link>
 	);
 };
 
