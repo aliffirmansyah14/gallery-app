@@ -9,10 +9,17 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import CreatePictureForm from "./CreatePictureForm";
+import { useState } from "react";
 
 const CreatePictureDialog = () => {
+	const [open, setOpen] = useState<boolean>(false);
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={isOpen => setOpen(isOpen)}>
 			<DialogTrigger asChild>
 				<Button className="px-4 rounded-2xl h-9 cursor-pointer">
 					<Plus className="size-6" /> Upload
@@ -24,12 +31,12 @@ const CreatePictureDialog = () => {
 					<DialogTitle>Add picture</DialogTitle>
 					<DialogDescription>
 						Masukkan file gambar untuk diupload.
-						<div className="italic text-[10px]">
+						<p className="italic text-[10px]">
 							* Format image .jpg, .png, .webp
-						</div>
+						</p>
 					</DialogDescription>
 				</DialogHeader>
-				<CreatePictureForm />
+				<CreatePictureForm onSuccess={handleClose} />
 			</DialogContent>
 		</Dialog>
 	);

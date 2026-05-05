@@ -8,7 +8,11 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Image } from "lucide-react";
 import { usePictureContext } from "../hooks/usePictureContext";
 
-const CreatePictureForm = () => {
+interface CreatePictureFormProps {
+	onSuccess?: () => void;
+}
+
+const CreatePictureForm = ({ onSuccess }: CreatePictureFormProps) => {
 	const { handleUpload, isUploading } = usePictureContext();
 
 	const form = useForm<PictureForm>({
@@ -19,7 +23,7 @@ const CreatePictureForm = () => {
 	const onSubmit = async (data: PictureForm) => {
 		try {
 			await handleUpload(data.image);
-			form.reset();
+			onSuccess?.();
 		} catch (error) {
 			// nanti ada toast
 		}
@@ -47,11 +51,10 @@ const CreatePictureForm = () => {
 								}
 							}}
 							className="hidden"
-						/>
-						<Button
-							variant="ghost"
-							type="button"
 							disabled={isUploading}
+						/>
+						<label
+							htmlFor={name}
 							className={clsx(
 								"grid place-items-center min-h-30 rounded-xl border-2 border-dashed border-primary hover:bg-accent cursor-pointer focus-visible:ring-0 w-full",
 								{
@@ -59,7 +62,6 @@ const CreatePictureForm = () => {
 										fieldState.invalid,
 								},
 							)}
-							onClick={() => document.getElementById(name)?.click()}
 						>
 							<div className="grid gap-2">
 								{!value ? (
@@ -74,7 +76,7 @@ const CreatePictureForm = () => {
 									<FieldError errors={[fieldState.error]} />
 								)}
 							</div>
-						</Button>
+						</label>
 					</Field>
 				)}
 			/>
