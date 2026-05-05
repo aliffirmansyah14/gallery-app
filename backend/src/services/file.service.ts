@@ -3,7 +3,7 @@ import { prisma } from "../config/database";
 
 const FOLDER_NAME = "Gallery";
 
-type FileRequest = {
+export type FileRequest = {
 	name: string;
 	mimeType: string;
 	url: string;
@@ -25,6 +25,11 @@ export const fileService = {
 			);
 			uploadStream.end(file.buffer);
 		});
+	},
+	async deleteFromCloudinary(
+		publicIdImage: string,
+	): Promise<{ result: string }> {
+		return await cloudinary.uploader.destroy(publicIdImage);
 	},
 	async saveToDb({ mimeType, name, size, url, blurDataUrl }: FileRequest) {
 		return prisma.file.create({
@@ -54,6 +59,44 @@ export const fileService = {
 				blurDataUrl: true,
 				createdAt: true,
 			},
+		});
+	},
+	async getFileById(id: string) {
+		return await prisma.file.findUnique({
+			where: {
+				id,
+			},
+			select: {
+				id: true,
+				name: true,
+				mimeType: true,
+				size: true,
+				url: true,
+				blurDataUrl: true,
+				createdAt: true,
+			},
+		});
+	},
+	async updateToDb(
+		id: string,
+		{ blurDataUrl, name, size, mimeType, url }: FileRequest,
+	) {
+		return await prisma.file.update({
+			where: {
+				id,
+			},
+			data: {
+				name,
+				mimeType,
+				blurDataUrl,
+				size,
+				url,
+			},
+		});
+	},
+	async deleteToDb(id: string) {
+		return await prisma.file.delete({
+			where: { id },
 		});
 	},
 };

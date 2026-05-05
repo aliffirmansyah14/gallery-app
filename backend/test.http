@@ -1,0 +1,33 @@
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "user1234"
+}
+### get files
+GET http://localhost:5000/files
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmQ5NTAxZC1lMDhjLTQzZDAtYmRjZS01ZmM3ZGQwYzVkZGMiLCJpYXQiOjE3Nzc5MDU2NTQsImV4cCI6MTc3Nzk5MjA1NH0.r5Hb2xVKfi1kiJg0Nv9DmwKAafrrL1ndNftxYc3nwsE
+
+###get by id
+GET   http://localhost:5000/file/ae43ba0b-834b-4ef9-b143-edaee28505d3
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmQ5NTAxZC1lMDhjLTQzZDAtYmRjZS01ZmM3ZGQwYzVkZGMiLCJpYXQiOjE3Nzc5MDU2NTQsImV4cCI6MTc3Nzk5MjA1NH0.r5Hb2xVKfi1kiJg0Nv9DmwKAafrrL1ndNftxYc3nwsE
+
+###update by id
+PUT http://localhost:5000/file/ae43ba0b-834b-4ef9-b143-edaee28505d3
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmQ5NTAxZC1lMDhjLTQzZDAtYmRjZS01ZmM3ZGQwYzVkZGMiLCJpYXQiOjE3Nzc5MDU2NTQsImV4cCI6MTc3Nzk5MjA1NH0.r5Hb2xVKfi1kiJg0Nv9DmwKAafrrL1ndNftxYc3nwsE
+Content-Type: application/json
+
+{
+  "name": "seed-1776690784441-3.jpg",
+   "mimeType": "image/jpeg",
+   "size": 126254,
+   "url": "https://res.cloudinary.com/dxlsjyr2f/image/upload/v1776690786/Gallery/swt4bcxndnmenr8pnke9.jpg",
+	"blurDataUrl":null
+
+}
+### delete
+DELETE  http://localhost:5000/file/12
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmQ5NTAxZC1lMDhjLTQzZDAtYmRjZS01ZmM3ZGQwYzVkZGMiLCJpYXQiOjE3Nzc5MDU2NTQsImV4cCI6MTc3Nzk5MjA1NH0.r5Hb2xVKfi1kiJg0Nv9DmwKAafrrL1ndNftxYc3nwsE
+Content-Type: application/json
+
