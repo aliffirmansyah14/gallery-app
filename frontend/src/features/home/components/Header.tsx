@@ -8,7 +8,7 @@ const Header = () => {
 			<header className="w-full mx-auto px-4">
 				<div className="flex justify-between items-center">
 					<h1 className="font-bold text-2xl">
-						Aii<span className="text-xl font-medium">cloud</span>
+						Aii<span className="ms-0.5 text-xl font-medium">Gallery</span>
 					</h1>
 					<div className="flex justify-center items-center gap-1">
 						<Button
