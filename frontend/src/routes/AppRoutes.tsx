@@ -17,11 +17,13 @@ const AppRoutes = () => {
 				</Route>
 				<Route
 					element={
-						<ProtectedRoute>
-							<PictureProvider>
-								<MainLayout />
-							</PictureProvider>
-						</ProtectedRoute>
+						<AuthProvider>
+							<ProtectedRoute>
+								<PictureProvider>
+									<MainLayout />
+								</PictureProvider>
+							</ProtectedRoute>
+						</AuthProvider>
 					}
 				>
 					<Route path="/" element={<HomePage />}>

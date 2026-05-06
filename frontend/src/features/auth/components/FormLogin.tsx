@@ -18,8 +18,10 @@ import { useRef } from "react";
 import LoginErrorBanner, {
 	type LoginErrorBannerHandle,
 } from "./LoginErrorBanner";
+import { useNavigate } from "react-router-dom";
 
 const FormLogin = () => {
+	const navigate = useNavigate();
 	const { handleLogin } = useAuth();
 	const errorRef = useRef<LoginErrorBannerHandle | null>(null);
 	const form = useForm<LoginFormData>({
@@ -34,6 +36,8 @@ const FormLogin = () => {
 		try {
 			errorRef.current?.clear();
 			await handleLogin(data);
+
+			navigate("/", { replace: true });
 		} catch (error: any) {
 			errorRef.current?.display(error.message);
 		}
@@ -60,6 +64,7 @@ const FormLogin = () => {
 									id={field.name}
 									aria-invalid={fieldState.invalid}
 									placeholder="m@example.com"
+									autoComplete="example@mail.com"
 									required
 								/>
 								{fieldState.invalid && (
@@ -88,7 +93,7 @@ const FormLogin = () => {
 						className="w-full py-5 text-lg"
 						disabled={form.formState.isSubmitting}
 					>
-						Login
+						{form.formState.isSubmitting ? "Login..." : "Login"}
 					</Button>
 				</CardFooter>
 			</form>

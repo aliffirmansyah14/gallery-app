@@ -1,6 +1,6 @@
 import { PictureContext } from "@/features/picture/hooks/usePictureContext";
 import { usePictures } from "@/features/picture/hooks/usePirctures";
-import * as fileService from "@/features/picture/services/file.service";
+import * as fileService from "@/features/picture/services";
 import type { Picture } from "@/features/picture/types";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import { useTransition } from "react";

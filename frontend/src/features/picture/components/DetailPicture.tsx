@@ -20,7 +20,7 @@ const DetailPicture = ({ picture }: DetailPicture) => {
 
 	return (
 		<div
-			className={`${isPotret ? "h-[489px] w-full " : "w-full sm:w-[585px] h-auto "} flex items-center justify-center`}
+			className={`${isPotret ? "h-122 w-full " : "w-full sm:w-146 h-auto "} flex items-center justify-center`}
 		>
 			<div
 				className={`overflow-hidden rounded-2xl ${isPotret ? "h-full" : "h-auto"}`}

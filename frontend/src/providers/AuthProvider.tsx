@@ -8,7 +8,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import * as authService from "@/features/auth/services/auth.services";
+import * as authService from "@/features/auth/services";
 import { AuthContext } from "@/features/auth/hooks/useAuth";
 
 export type User = {
@@ -32,18 +32,20 @@ export default function AuthProvider({
 	children: React.ReactNode;
 }) {
 	const [user, setUser] = useState<User | null>(null);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [_, setToken] = useLocalStorage("token", "");
 	const [__, startTransition] = useTransition();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const fetchUser = useEffectEvent(async (controller: AbortController) => {
+		console.log("1.");
 		setLoading(true);
 		try {
+			await new Promise(res => setTimeout(res, 1000));
 			const response = await authService.getMe(controller.signal);
-			if (response.success && response.data) {
-				setUser(response.data);
-			}
+
+			console.log("2.");
+			setUser(response.data ?? null);
 		} catch (error: any) {
 			if (error.name === "CanceledError" || error.name === "AbortError") return;
 
@@ -52,6 +54,7 @@ export default function AuthProvider({
 
 			setUser(null);
 		} finally {
+			console.log("3.");
 			setLoading(false);
 		}
 	});
@@ -59,7 +62,6 @@ export default function AuthProvider({
 	useEffect(() => {
 		abortControllerRef.current?.abort();
 		abortControllerRef.current = new AbortController();
-
 		fetchUser(abortControllerRef.current);
 
 		return () => {

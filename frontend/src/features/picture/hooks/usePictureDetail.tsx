@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { getFileById } from "@/features/picture/services/file.service";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import type { Picture } from "../types";
+import { getFileById } from "../services";
 
 export const usePictureDetail = (id: string) => {
 	const [picture, setPicture] = useState<Picture | null>(null);

@@ -1,5 +1,14 @@
 import * as z from "zod";
 
+export type Picture = {
+	id: string;
+	name: string;
+	mimeType: string;
+	url: string;
+	blurDataUrl: string | null;
+	createdAt: Date;
+};
+
 const MAX_FILE_SIZE = 2000000;
 const ACCEPTED_IMAGE_TYPES = [
 	"image/jpeg",

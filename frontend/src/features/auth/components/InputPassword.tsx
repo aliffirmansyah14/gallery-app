@@ -24,6 +24,7 @@ const InputPassword = ({ field, fieldState }: InputPasswordProps) => {
 				type={isPasswordInputVisible ? "text" : "password"}
 				aria-invalid={fieldState.invalid}
 				className="pr-8"
+				autoComplete="current-password"
 				required
 			/>
 			<div className="absolute right-0 top-0 bottom-0 flex items-center justify-items-center border-l">
