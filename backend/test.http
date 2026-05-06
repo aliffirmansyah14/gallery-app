@@ -27,7 +27,7 @@ Content-Type: application/json
 
 }
 ### delete
-DELETE  http://localhost:5000/file/12
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmQ5NTAxZC1lMDhjLTQzZDAtYmRjZS01ZmM3ZGQwYzVkZGMiLCJpYXQiOjE3Nzc5MDU2NTQsImV4cCI6MTc3Nzk5MjA1NH0.r5Hb2xVKfi1kiJg0Nv9DmwKAafrrL1ndNftxYc3nwsE
+DELETE  http://localhost:5000/file/3c176d8c-1ed7-48d7-b7d3-b9a1345d777e
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTEyZmI3MS1jODRiLTQxYjAtOTBlMi04NGExZjgyNzhjYmEiLCJpYXQiOjE3NzgwODExODEsImV4cCI6MTc3ODE2NzU4MX0.Xbr7_YfmT8Rq6ei30KYtrZ2YmBJYsFoaq3721cI_vH0
 Content-Type: application/json
 

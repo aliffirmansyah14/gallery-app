@@ -11,7 +11,6 @@ const DetailPicture = ({ picture }: DetailPicture) => {
 
 	const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
 		const { naturalWidth, naturalHeight } = e.currentTarget;
-		console.log({ width: naturalWidth, height: naturalHeight });
 
 		if (naturalHeight > naturalWidth) {
 			setIsPotret(true);
@@ -20,18 +19,16 @@ const DetailPicture = ({ picture }: DetailPicture) => {
 
 	return (
 		<div
-			className={`${isPotret ? "h-122 w-full " : "w-full sm:w-146 h-auto "} flex items-center justify-center`}
+			className={`${isPotret ? "w-max h-max" : "w-full sm:w-max h-max"} absolute inset-1/2 -translate-1/2 rounded-2xl overflow-hidden zoom-in-95 fade-in-0 animate-in group hover:bg-black/90`}
 		>
-			<div
-				className={`overflow-hidden rounded-2xl ${isPotret ? "h-full" : "h-auto"}`}
-			>
-				<img
-					src={picture.url}
-					alt={picture.name}
-					onLoad={handleImageLoad}
-					className={`object-contain ${isPotret ? "h-full w-full" : "w-full h-auto"}`}
-				/>
-			</div>
+			<img
+				src={picture.url}
+				alt={picture.name}
+				onLoad={handleImageLoad}
+				width={isPotret ? "auto" : "587"}
+				height={isPotret ? "488" : "auto"}
+				className={`object-contain ${isPotret ? "h-122 w-auto" : "w-147 h-auto"}`}
+			/>
 		</div>
 	);
 };

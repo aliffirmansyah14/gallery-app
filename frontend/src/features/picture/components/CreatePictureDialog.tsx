@@ -4,6 +4,7 @@ import {
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
+	DialogOverlay,
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
@@ -19,7 +20,8 @@ const CreatePictureDialog = () => {
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={isOpen => setOpen(isOpen)}>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogOverlay />
 			<DialogTrigger asChild>
 				<Button className="px-4 rounded-2xl h-9 cursor-pointer">
 					<Plus className="size-6" /> Upload
@@ -29,12 +31,14 @@ const CreatePictureDialog = () => {
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Add picture</DialogTitle>
-					<DialogDescription>
-						Masukkan file gambar untuk diupload.
+					<div>
+						<DialogDescription>
+							Masukkan file gambar untuk diupload.
+						</DialogDescription>
 						<p className="italic text-[10px]">
 							* Format image .jpg, .png, .webp
 						</p>
-					</DialogDescription>
+					</div>
 				</DialogHeader>
 				<CreatePictureForm onSuccess={handleClose} />
 			</DialogContent>

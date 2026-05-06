@@ -5,7 +5,7 @@ import { getFileById } from "../services";
 
 export const usePictureDetail = (id: string) => {
 	const [picture, setPicture] = useState<Picture | null>(null);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const fetchPicture = async () => {
@@ -14,15 +14,17 @@ export const usePictureDetail = (id: string) => {
 
 		setLoading(true);
 		try {
-			await new Promise(resolve => setTimeout(resolve, 300));
+			await new Promise(resolve => setTimeout(resolve, 1500));
 			const response = await getFileById(id, abortControllerRef.current.signal);
-			console.log(response.data);
+
 			setPicture(response.data || null);
 		} catch (error: any) {
 			if (error.name === "CanceledError" || error.name === "AbortError") return;
 
 			const err = getCleanErrorMessage(error);
 			console.log("Error saat fetch file: ", err.message);
+
+			setPicture(null);
 		} finally {
 			setLoading(false);
 		}

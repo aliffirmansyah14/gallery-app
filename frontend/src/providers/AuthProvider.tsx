@@ -38,13 +38,11 @@ export default function AuthProvider({
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const fetchUser = useEffectEvent(async (controller: AbortController) => {
-		console.log("1.");
 		setLoading(true);
 		try {
 			await new Promise(res => setTimeout(res, 1000));
 			const response = await authService.getMe(controller.signal);
 
-			console.log("2.");
 			setUser(response.data ?? null);
 		} catch (error: any) {
 			if (error.name === "CanceledError" || error.name === "AbortError") return;
@@ -54,7 +52,6 @@ export default function AuthProvider({
 
 			setUser(null);
 		} finally {
-			console.log("3.");
 			setLoading(false);
 		}
 	});
