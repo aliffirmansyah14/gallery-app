@@ -24,6 +24,7 @@ export type AuthContextTypes = {
 	// abortControllerRef: React.RefObject<AbortController | undefined>;
 	loading: boolean;
 	handleLogin: (data: LoginFormData) => Promise<void>;
+	handleLogout: () => void;
 };
 
 export default function AuthProvider({
@@ -95,12 +96,16 @@ export default function AuthProvider({
 		});
 	};
 
+	const handleLogout = () => {
+		setToken("");
+	};
 	const contextValue = {
 		user,
 		setUser,
 		setToken,
 		loading,
 		handleLogin,
+		handleLogout,
 	};
 	return <AuthContext value={contextValue}>{children}</AuthContext>;
 }
