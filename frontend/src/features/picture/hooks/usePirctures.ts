@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import type { Picture } from "../types";
 import { getAllFiles } from "../services";
@@ -8,7 +8,7 @@ export const usePictures = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
 
-	const fetchPictures = async () => {
+	const fetchPictures = useEffectEvent(async () => {
 		abortControllerRef.current?.abort();
 		abortControllerRef.current = new AbortController();
 
@@ -25,7 +25,7 @@ export const usePictures = () => {
 		} finally {
 			setLoading(false);
 		}
-	};
+	});
 
 	useEffect(() => {
 		fetchPictures();

@@ -3,6 +3,7 @@ import { Download, X } from "lucide-react";
 import { Portal } from "radix-ui";
 import DialogDeletePicture from "./DeletePictureDialog";
 import type { Picture } from "../types";
+import { getTemporaryUrl } from "../services";
 
 interface ActionButtonDetailPictureProps {
 	picture: Picture;
@@ -15,9 +16,7 @@ const ActionButtonDetailPicture = ({
 }: ActionButtonDetailPictureProps) => {
 	const handleDownloadPicture = async () => {
 		try {
-			const response = await fetch(picture.url);
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
+			const url = await getTemporaryUrl(picture.url);
 
 			const a = document.createElement("a");
 			a.href = url;
@@ -37,14 +36,7 @@ const ActionButtonDetailPicture = ({
 	return (
 		<Portal.Root>
 			<div className="fixed z-51 p-3 isolate w-full top-0 flex justify-between pointer-events-auto">
-				<Button
-					variant="secondary"
-					size="icon-lg"
-					onClick={e => {
-						e.stopPropagation();
-						onClose();
-					}}
-				>
+				<Button variant="secondary" size="icon-lg" onClick={onClose}>
 					<X className="size-6" />
 				</Button>
 				<div className="flex items-center gap-2">
