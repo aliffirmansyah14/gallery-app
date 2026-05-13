@@ -4,15 +4,22 @@ import { Portal } from "radix-ui";
 import DialogDeletePicture from "./DeletePictureDialog";
 import type { Picture } from "../types";
 import { getTemporaryUrl } from "../services";
+import EditPictureDialog from "./EditPictureDialog";
 
 interface ActionButtonDetailPictureProps {
 	picture: Picture;
+	onEdit: (name: string) => Promise<void>;
+	onDelete: () => Promise<void>;
 	onClose: () => void;
+	isPending: boolean;
 }
 
 const ActionButtonDetailPicture = ({
 	picture,
 	onClose,
+	onEdit,
+	onDelete,
+	isPending,
 }: ActionButtonDetailPictureProps) => {
 	const handleDownloadPicture = async () => {
 		try {
@@ -49,17 +56,12 @@ const ActionButtonDetailPicture = ({
 					</Button>
 					<div className="w-0.5 bg-secondary self-stretch" />
 					<div className="grid grid-cols-2 gap-1">
-						<Button
-							variant="secondary"
-							size="lg"
-							onClick={e => {
-								e.stopPropagation();
-							}}
-						>
-							Edit
-						</Button>
-
-						<DialogDeletePicture id={picture.id} onSuccess={onClose} />
+						<EditPictureDialog picture={picture} onEdit={onEdit} />
+						<DialogDeletePicture
+							isPending={isPending}
+							onDelete={onDelete}
+							onSuccess={onClose}
+						/>
 					</div>
 				</div>
 			</div>

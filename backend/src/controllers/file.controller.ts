@@ -60,7 +60,9 @@ class FileController extends BaseController {
 		const id = req.params.id;
 		const requestBody = req.body;
 
-		console.log(`Request update file id:${id} : ${requestBody} `);
+		console.log(
+			`Request update file id:${id} : ${JSON.stringify(requestBody)} `,
+		);
 
 		if (!isIdValid(id)) return this.clientError(res, 404, "Id not found");
 

@@ -3,4 +3,5 @@
 ##Todo List
 
 []:ui sidebar navbar frontend
-[]:feat update picture frontend
+[]:refactor code picture detail
+[x]:feat update picture frontend

@@ -5,6 +5,7 @@ export type Picture = {
 	name: string;
 	mimeType: string;
 	url: string;
+	size: string;
 	blurDataUrl: string | null;
 	createdAt: Date;
 };
@@ -28,3 +29,9 @@ export const pictureFormSchema = z.object({
 });
 
 export type PictureForm = z.infer<typeof pictureFormSchema>;
+
+export const pictureFormEditSchema = z.object({
+	name: z.string().min(1, { message: "Name tidak boleh kosong" }),
+});
+
+export type PictureFormEdit = z.infer<typeof pictureFormEditSchema>;

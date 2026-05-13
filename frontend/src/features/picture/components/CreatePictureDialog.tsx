@@ -3,6 +3,7 @@ import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
+	DialogFooter,
 	DialogHeader,
 	DialogOverlay,
 	DialogTitle,
@@ -40,7 +41,20 @@ const CreatePictureDialog = () => {
 						</p>
 					</div>
 				</DialogHeader>
-				<CreatePictureForm onSuccess={handleClose} />
+				<CreatePictureForm
+					onSuccess={handleClose}
+					renderButton={isUploading => (
+						<DialogFooter>
+							<Button
+								disabled={isUploading}
+								type="submit"
+								className="w-full h-10 rounded-lg"
+							>
+								{isUploading ? "Uploading..." : "Submit"}
+							</Button>
+						</DialogFooter>
+					)}
+				/>
 			</DialogContent>
 		</Dialog>
 	);
