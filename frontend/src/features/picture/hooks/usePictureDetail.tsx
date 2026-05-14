@@ -1,42 +1,127 @@
-import { useEffect, useRef, useState } from "react";
+import {
+	useEffect,
+	useEffectEvent,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import type { Picture } from "../types";
-import { getFileById } from "../services";
+import { deleteFile, getFileById, updateFile } from "../services";
 
 export const usePictureDetail = (id: string) => {
 	const [picture, setPicture] = useState<Picture | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const [isPending, startTransition] = useTransition();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
-	const fetchPicture = async () => {
+	// Helper untuk abort (Compiler akan mengoptimasi ini)
+	const createSignal = () => {
 		abortControllerRef.current?.abort();
-		abortControllerRef.current = new AbortController();
+		const controller = new AbortController();
+		abortControllerRef.current = controller;
+		return controller.signal;
+	};
+
+	const fetchPicture = useEffectEvent(async () => {
+		if (!id) return;
+
+		const signal = createSignal();
 
 		setLoading(true);
+		setError(null);
+
 		try {
-			await new Promise(resolve => setTimeout(resolve, 1500));
-			const response = await getFileById(id, abortControllerRef.current.signal);
+			const response = await getFileById(id, signal);
 
 			setPicture(response.data || null);
-		} catch (error: any) {
-			if (error.name === "CanceledError" || error.name === "AbortError") return;
+		} catch (err: unknown) {
+			if (
+				err instanceof Error &&
+				(err.name === "CanceledError" || err.name === "AbortError")
+			)
+				return;
 
-			const err = getCleanErrorMessage(error);
-			console.log("Error saat fetch file: ", err.message);
+			const cleanError = getCleanErrorMessage(err);
+			console.log(cleanError);
 
-			setPicture(null);
+			setError(cleanError.message);
 		} finally {
-			setLoading(false);
+			if (!signal.aborted) {
+				setLoading(false);
+			}
 		}
+	});
+
+	const handleUpdate = async (
+		data: Omit<Picture, "id" | "createdAt" | "size">,
+	): Promise<void> => {
+		const signal = createSignal();
+
+		return new Promise((resolve, reject) => {
+			startTransition(async () => {
+				try {
+					const response = await updateFile(id, data, signal);
+					setPicture(response.data || null);
+
+					resolve();
+				} catch (err: unknown) {
+					if (
+						err instanceof Error &&
+						(err.name === "CanceledError" || err.name === "AbortError")
+					)
+						return;
+
+					const cleanError = getCleanErrorMessage(err);
+					setError(cleanError.message);
+
+					reject(err);
+				}
+			});
+		});
+	};
+
+	const handleDelete = async (): Promise<void> => {
+		const signal = createSignal();
+
+		return new Promise((resolve, reject) => {
+			startTransition(async () => {
+				try {
+					await deleteFile(id, signal);
+
+					setPicture(null);
+					resolve();
+				} catch (err: unknown) {
+					if (
+						err instanceof Error &&
+						(err.name === "CanceledError" || err.name === "AbortError")
+					)
+						return;
+
+					const cleanError = getCleanErrorMessage(err);
+					setError(cleanError.message);
+
+					reject(cleanError);
+				}
+			});
+		});
 	};
 
 	useEffect(() => {
-		if (id) {
-			fetchPicture();
-		}
-
+		fetchPicture();
 		return () => abortControllerRef.current?.abort();
-	}, []);
+	}, [id]);
 
-	return { picture, setPicture, loading, fetchPicture };
+	return {
+		picture,
+		setPicture,
+		loading,
+		error, // Berikan akses ke error state
+		isPending,
+		fetchPicture,
+		handleUpdate,
+		handleDelete,
+	};
 };

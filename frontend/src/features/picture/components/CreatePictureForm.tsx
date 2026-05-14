@@ -3,16 +3,18 @@ import { pictureFormSchema, type PictureForm } from "../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError } from "@/components/ui/field";
 import clsx from "clsx";
-import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
 import { Image } from "lucide-react";
 import { usePictureContext } from "../hooks/usePictureContext";
 
 interface CreatePictureFormProps {
 	onSuccess?: () => void;
+	renderButton: (loading: boolean) => React.ReactNode;
 }
 
-const CreatePictureForm = ({ onSuccess }: CreatePictureFormProps) => {
+const CreatePictureForm = ({
+	onSuccess,
+	renderButton,
+}: CreatePictureFormProps) => {
 	const { handleUpload, isUploading } = usePictureContext();
 
 	const form = useForm<PictureForm>({
@@ -80,15 +82,7 @@ const CreatePictureForm = ({ onSuccess }: CreatePictureFormProps) => {
 					</Field>
 				)}
 			/>
-			<DialogFooter>
-				<Button
-					disabled={isUploading}
-					type="submit"
-					className="w-full h-10 rounded-lg"
-				>
-					{isUploading ? "Uploading..." : "Submit"}
-				</Button>
-			</DialogFooter>
+			{renderButton(isUploading)}
 		</form>
 	);
 };

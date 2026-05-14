@@ -41,6 +41,7 @@ export const fileService = {
 				blurDataUrl,
 			},
 			select: {
+				id: true,
 				name: true,
 				mimeType: true,
 				url: true,

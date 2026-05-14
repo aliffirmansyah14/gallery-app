@@ -5,8 +5,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import HomePage from "@/pages/home/HomePage";
 import AuthProvider from "@/providers/AuthProvider";
 import MainLayout from "@/layout/MainLayout";
-import { PictureProvider } from "@/providers/PictureProvider";
 import DetailPage from "@/pages/detail/DetailPage";
+import { PictureProvider } from "@/providers/PictureProvider";
 
 const AppRoutes = () => {
 	return (

@@ -10,34 +10,24 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { useTransition } from "react";
-import { deleteFile } from "../services";
-import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import { Spinner } from "@/components/ui/spinner";
 
 interface DeletePictureDialogProps {
-	id: string;
 	onSuccess?: () => void;
+	isPending: boolean;
+	onDelete: () => Promise<void>;
 }
 
-const DialogDeletePicture = ({ id, onSuccess }: DeletePictureDialogProps) => {
-	const [isPending, startTransition] = useTransition();
-
-	const handleDeletePicture = () => {
-		if (!id.trim()) return;
-
-		startTransition(async () => {
-			try {
-				const result = await deleteFile(id);
-				console.log(result.data);
-
-				onSuccess?.();
-			} catch (error) {
-				const err = getCleanErrorMessage(error);
-
-				console.log(err);
-			}
-		});
+const DialogDeletePicture = ({
+	onSuccess,
+	onDelete,
+	isPending,
+}: DeletePictureDialogProps) => {
+	const handleDeletePicture = async () => {
+		try {
+			await onDelete();
+			onSuccess?.();
+		} catch (error) {}
 	};
 	return (
 		<Dialog>

@@ -4,7 +4,6 @@ const validFileRequestKeys: (keyof FileRequest)[] = [
 	"name",
 	"blurDataUrl",
 	"mimeType",
-	"size",
 	"url",
 ];
 

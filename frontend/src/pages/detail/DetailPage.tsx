@@ -17,7 +17,8 @@ const DetailPage = () => {
 	const navigate = useNavigate();
 
 	const { id } = useParams();
-	const { picture, loading } = usePictureDetail(id || "");
+	const { picture, loading, handleDelete, handleUpdate, isPending } =
+		usePictureDetail(id || "");
 
 	const handleClose = () => {
 		navigate("/", {
@@ -27,41 +28,50 @@ const DetailPage = () => {
 
 	useEffect(() => {
 		if (!id || id === "undefined" || (!loading && !picture)) {
-			navigate("/", { replace: true });
+			handleClose();
 		}
 	}, [id, navigate, picture, loading]);
 
 	return (
-		<>
-			<Dialog open={true} onOpenChange={open => !open && handleClose()}>
-				<DialogOverlay />
-				<DialogContent
-					className="max-w-full sm:max-w-fit p-0 bg-transparent "
-					showCloseButton={false}
-				>
-					{/* tidak akan tampil di layar  */}
-					<VisuallyHidden.Root>
-						<DialogTitle>Detail Gambar {picture?.name}</DialogTitle>
-						<DialogDescription>Detail Gambar {picture?.name}</DialogDescription>
-					</VisuallyHidden.Root>
+		<Dialog open={true} onOpenChange={open => !open && handleClose()}>
+			<DialogOverlay />
+			<DialogContent
+				className="max-w-full sm:max-w-fit p-0 bg-transparent "
+				showCloseButton={false}
+			>
+				{/* tidak akan tampil di layar  */}
+				<VisuallyHidden.Root>
+					<DialogTitle>Detail Gambar {picture?.name}</DialogTitle>
+					<DialogDescription>Detail Gambar {picture?.name}</DialogDescription>
+				</VisuallyHidden.Root>
 
-					{loading && (
-						<div className="absolute top-1/2 left-1/2 -translate-1/2">
-							<Spinner className="size-10 text-white" />
-						</div>
-					)}
-					{!loading && picture && (
-						<>
-							<DetailPicture picture={picture} onClick={handleClose} />
-							<ActionButtonDetailPicture
-								onClose={handleClose}
-								picture={picture}
-							/>
-						</>
-					)}
-				</DialogContent>
-			</Dialog>
-		</>
+				{loading && (
+					<div className="absolute top-1/2 left-1/2 -translate-1/2">
+						<Spinner className="size-10 text-white" />
+					</div>
+				)}
+				{!loading && picture && (
+					<>
+						<DetailPicture picture={picture} onClick={handleClose} />
+						<ActionButtonDetailPicture
+							isPending={isPending}
+							onDelete={handleDelete}
+							onEdit={async name => {
+								// ambil yang data yang sesuai
+								const { id, createdAt, size, ...data } = { ...picture };
+
+								await handleUpdate({
+									...data,
+									name,
+								});
+							}}
+							onClose={handleClose}
+							picture={picture}
+						/>
+					</>
+				)}
+			</DialogContent>
+		</Dialog>
 		// <div
 		// 	onClick={() => {
 		// 		handleClose();
