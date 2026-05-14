@@ -10,11 +10,13 @@ export const usePictures = () => {
 
 	const fetchPictures = useEffectEvent(async () => {
 		abortControllerRef.current?.abort();
-		abortControllerRef.current = new AbortController();
+
+		const controller = new AbortController();
+		abortControllerRef.current = controller;
 
 		setLoading(true);
 		try {
-			const response = await getAllFiles(abortControllerRef.current.signal);
+			const response = await getAllFiles(controller.signal);
 			console.log(response.data);
 			setPictures(response.data || []);
 		} catch (error: any) {
@@ -23,7 +25,9 @@ export const usePictures = () => {
 			const err = getCleanErrorMessage(error);
 			console.log("Error saat fetch files : ", err.message);
 		} finally {
-			setLoading(false);
+			if (!controller.signal.aborted) {
+				setLoading(false);
+			}
 		}
 	});
 
@@ -33,5 +37,5 @@ export const usePictures = () => {
 		return () => abortControllerRef.current?.abort();
 	}, []);
 
-	return { pictures, setPictures, loading, fetchPictures };
+	return { pictures, loading, setPictures, fetchPictures };
 };

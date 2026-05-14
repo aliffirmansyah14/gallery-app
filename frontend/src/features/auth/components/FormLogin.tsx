@@ -18,11 +18,10 @@ import { useRef } from "react";
 import LoginErrorBanner, {
 	type LoginErrorBannerHandle,
 } from "./LoginErrorBanner";
-import { useNavigate } from "react-router-dom";
 
 const FormLogin = () => {
-	const navigate = useNavigate();
 	const { handleLogin } = useAuth();
+
 	const errorRef = useRef<LoginErrorBannerHandle | null>(null);
 	const form = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
@@ -36,9 +35,8 @@ const FormLogin = () => {
 		try {
 			errorRef.current?.clear();
 			await handleLogin(data);
-
-			navigate("/", { replace: true });
 		} catch (error: any) {
+			console.log("erroor di form login , ", error);
 			errorRef.current?.display(error.message);
 		}
 	};

@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError } from "@/components/ui/field";
 import clsx from "clsx";
 import { Image } from "lucide-react";
-import { usePictureContext } from "../hooks/usePictureContext";
+import usePictureUpload from "../hooks/usePictureUpload";
+import { useTransition } from "react";
+import { usePictureContext } from "../hooks";
 
 interface CreatePictureFormProps {
 	onSuccess?: () => void;
@@ -15,7 +17,9 @@ const CreatePictureForm = ({
 	onSuccess,
 	renderButton,
 }: CreatePictureFormProps) => {
-	const { handleUpload, isUploading } = usePictureContext();
+	const { handleUpload, isUploading } = usePictureUpload();
+	const { setPictures } = usePictureContext();
+	const [, startTransition] = useTransition();
 
 	const form = useForm<PictureForm>({
 		resolver: zodResolver(pictureFormSchema),
@@ -24,7 +28,11 @@ const CreatePictureForm = ({
 
 	const onSubmit = async (data: PictureForm) => {
 		try {
-			await handleUpload(data.image);
+			await handleUpload(data.image, newPicture => {
+				startTransition(() => {
+					setPictures(prev => [...prev, newPicture]);
+				});
+			});
 			onSuccess?.();
 		} catch (error) {
 			// nanti ada toast

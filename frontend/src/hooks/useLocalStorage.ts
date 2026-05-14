@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
 	const [storedValue, setStoredValue] = useState<T>(() => {
@@ -13,18 +13,22 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 	});
 
 	// Fungsi setter yang membungkus versi aslinya
-	const setValue = (value: T | ((val: T) => T)) => {
-		try {
-			const valueToStore =
-				value instanceof Function ? value(storedValue) : value;
+	const setValue = useCallback(
+		(value: T | ((val: T) => T)) => {
+			try {
+				setStoredValue(prev => {
+					const valueToStore = value instanceof Function ? value(prev) : value;
 
-			setStoredValue(valueToStore);
+					window.localStorage.setItem(key, JSON.stringify(valueToStore));
 
-			window.localStorage.setItem(key, JSON.stringify(valueToStore));
-		} catch (error) {
-			console.error(`Error set localStorage key “${key}”:`, error);
-		}
-	};
+					return valueToStore;
+				});
+			} catch (error) {
+				console.error(`Error set localStorage key “${key}”:`, error);
+			}
+		},
+		[key],
+	);
 
 	return [storedValue, setValue] as const;
 }

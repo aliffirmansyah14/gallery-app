@@ -1,9 +1,9 @@
 import {
+	useCallback,
 	useEffect,
 	useEffectEvent,
 	useRef,
 	useState,
-	useTransition,
 } from "react";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import type { Picture } from "../types";
@@ -13,20 +13,22 @@ export const usePictureDetail = (id: string) => {
 	const [picture, setPicture] = useState<Picture | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
+	const [isPending, setIsPending] = useState<boolean>(false);
 
-	const [isPending, startTransition] = useTransition();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	// Helper untuk abort (Compiler akan mengoptimasi ini)
 	const createSignal = () => {
 		abortControllerRef.current?.abort();
-		const controller = new AbortController();
-		abortControllerRef.current = controller;
-		return controller.signal;
+		abortControllerRef.current = new AbortController();
+		return abortControllerRef.current.signal;
 	};
 
 	const fetchPicture = useEffectEvent(async () => {
-		if (!id) return;
+		if (!id) {
+			setLoading(false);
+			return;
+		}
 
 		const signal = createSignal();
 
@@ -36,7 +38,7 @@ export const usePictureDetail = (id: string) => {
 		try {
 			const response = await getFileById(id, signal);
 
-			setPicture(response.data || null);
+			setPicture(response.data ?? null);
 		} catch (err: unknown) {
 			if (
 				err instanceof Error &&
@@ -55,59 +57,57 @@ export const usePictureDetail = (id: string) => {
 		}
 	});
 
-	const handleUpdate = async (
-		data: Omit<Picture, "id" | "createdAt" | "size">,
-	): Promise<void> => {
-		const signal = createSignal();
+	const handleUpdate = useCallback(
+		async (data: Omit<Picture, "id" | "createdAt" | "size">): Promise<void> => {
+			const signal = createSignal();
+			setIsPending(true);
+			setError(null);
 
-		return new Promise((resolve, reject) => {
-			startTransition(async () => {
-				try {
-					const response = await updateFile(id, data, signal);
-					setPicture(response.data || null);
+			try {
+				const response = await updateFile(id, data, signal);
+				setPicture(response.data ?? null);
+			} catch (err: unknown) {
+				if (
+					err instanceof Error &&
+					(err.name === "CanceledError" || err.name === "AbortError")
+				)
+					return;
 
-					resolve();
-				} catch (err: unknown) {
-					if (
-						err instanceof Error &&
-						(err.name === "CanceledError" || err.name === "AbortError")
-					)
-						return;
-
-					const cleanError = getCleanErrorMessage(err);
-					setError(cleanError.message);
-
-					reject(err);
+				const cleanError = getCleanErrorMessage(err);
+				setError(cleanError.message);
+			} finally {
+				if (!signal.aborted) {
+					setIsPending(false);
 				}
-			});
-		});
-	};
+			}
+		},
+		[id],
+	);
 
-	const handleDelete = async (): Promise<void> => {
+	const handleDelete = useCallback(async (): Promise<void> => {
 		const signal = createSignal();
+		setIsPending(true);
+		setError(null);
 
-		return new Promise((resolve, reject) => {
-			startTransition(async () => {
-				try {
-					await deleteFile(id, signal);
+		try {
+			await deleteFile(id, signal);
 
-					setPicture(null);
-					resolve();
-				} catch (err: unknown) {
-					if (
-						err instanceof Error &&
-						(err.name === "CanceledError" || err.name === "AbortError")
-					)
-						return;
+			setPicture(null);
+		} catch (err: unknown) {
+			if (
+				err instanceof Error &&
+				(err.name === "CanceledError" || err.name === "AbortError")
+			)
+				return;
 
-					const cleanError = getCleanErrorMessage(err);
-					setError(cleanError.message);
-
-					reject(cleanError);
-				}
-			});
-		});
-	};
+			const cleanError = getCleanErrorMessage(err);
+			setError(cleanError.message);
+		} finally {
+			if (!signal.aborted) {
+				setIsPending(false);
+			}
+		}
+	}, [id]);
 
 	useEffect(() => {
 		fetchPicture();
@@ -116,9 +116,8 @@ export const usePictureDetail = (id: string) => {
 
 	return {
 		picture,
-		setPicture,
 		loading,
-		error, // Berikan akses ke error state
+		error,
 		isPending,
 		fetchPicture,
 		handleUpdate,

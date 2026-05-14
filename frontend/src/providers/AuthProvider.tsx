@@ -2,14 +2,17 @@ import type { LoginFormData } from "@/features/auth/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { getCleanErrorMessage } from "@/lib/get-clean-error-message";
 import {
+	useCallback,
 	useEffect,
 	useEffectEvent,
+	useMemo,
 	useRef,
 	useState,
 	useTransition,
 } from "react";
 import * as authService from "@/features/auth/services";
 import { AuthContext } from "@/features/auth/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export type User = {
 	id: string;
@@ -33,74 +36,94 @@ export default function AuthProvider({
 }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [_, setToken] = useLocalStorage("token", "");
-	const [__, startTransition] = useTransition();
+	const [, setToken] = useLocalStorage("token", "");
+	const [, startTransition] = useTransition();
 	const abortControllerRef = useRef<AbortController | null>(null);
+	const navigate = useNavigate();
 
-	const fetchUser = useEffectEvent(async (controller: AbortController) => {
+	const createSignal = () => {
+		abortControllerRef.current?.abort();
+		abortControllerRef.current = new AbortController();
+		return abortControllerRef.current.signal;
+	};
+
+	const fetchUser = useEffectEvent(async () => {
+		const signal = createSignal();
 		setLoading(true);
+
 		try {
 			await new Promise(res => setTimeout(res, 1000));
-			const response = await authService.getMe(controller.signal);
+			const response = await authService.getMe(signal);
 
 			setUser(response.data ?? null);
-		} catch (error: any) {
-			if (error.name === "CanceledError" || error.name === "AbortError") return;
+		} catch (error: unknown) {
+			if (
+				error instanceof Error &&
+				(error.name === "CanceledError" || error.name === "AbortError")
+			)
+				return;
 
 			const err = getCleanErrorMessage(error);
 			console.error("Auth fetch error:", err.message);
 
 			setUser(null);
 		} finally {
-			setLoading(false);
+			if (!signal.aborted) {
+				setLoading(false);
+			}
 		}
 	});
 
 	useEffect(() => {
-		abortControllerRef.current?.abort();
-		abortControllerRef.current = new AbortController();
-		fetchUser(abortControllerRef.current);
+		fetchUser();
 
 		return () => {
 			abortControllerRef.current?.abort();
 		};
 	}, []);
 
-	const handleLogin = async (data: LoginFormData): Promise<void> => {
-		abortControllerRef.current?.abort();
-		return new Promise((resolve, reject) => {
-			startTransition(async () => {
-				abortControllerRef.current = new AbortController();
-				try {
-					const response = await authService.login(
-						data,
-						abortControllerRef.current.signal,
-					);
+	const handleLogin = useCallback(
+		async (data: LoginFormData): Promise<void> => {
+			const signal = createSignal();
 
-					console.log(response);
-					setToken(response.data?.token || "");
-					setUser(response.data?.user || null);
+			try {
+				const response = await authService.login(data, signal);
 
-					resolve();
-				} catch (error: any) {
-					if (error.name === "CanceledError" || error.name === "AbortError")
-						return;
+				console.log(response.data?.token);
+				setToken(response.data?.token || "");
+				setUser(response.data?.user ?? null);
 
-					const err = getCleanErrorMessage(error);
-					console.log("Error saat login : ", err);
-
-					reject(err);
+				if (response.success && response.data) {
+					startTransition(() => {
+						navigate("/");
+					});
 				}
-			});
-		});
-	};
+			} catch (error: unknown) {
+				if (
+					error instanceof Error &&
+					(error.name === "CanceledError" || error.name === "AbortError")
+				) {
+					return;
+				}
 
-	const contextValue = {
-		user,
-		setUser,
-		setToken,
-		loading,
-		handleLogin,
-	};
+				const err = getCleanErrorMessage(error);
+				console.log("Error saat login : ", err);
+				throw err;
+			}
+		},
+		[navigate, setToken],
+	);
+
+	const contextValue = useMemo(
+		() => ({
+			user,
+			setUser,
+			setToken,
+			loading,
+			handleLogin,
+		}),
+		[user, loading, handleLogin],
+	);
+
 	return <AuthContext value={contextValue}>{children}</AuthContext>;
 }
